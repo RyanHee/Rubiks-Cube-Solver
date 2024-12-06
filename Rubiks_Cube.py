@@ -305,8 +305,9 @@ class CubeVisualizer:
             'B': color.blue,
             'Y': color.yellow
         }
-        self.faces = []
+        self.cube_entity = Entity()
         self.build_cube()
+        self.mouse_start = None  # Track mouse drag start position
 
     def build_cube(self):
         # Create all 6 faces
@@ -328,7 +329,7 @@ class CubeVisualizer:
         ]
 
         for i in range(6):  # Loop through faces
-            face = Entity()
+            face = Entity(parent=self.cube_entity)
             for row in range(3):
                 for col in range(3):
                     cubelet = Entity(
@@ -340,16 +341,28 @@ class CubeVisualizer:
                     )
             face.position = face_positions[i]
             face.rotation = face_rotations[i]
-            self.faces.append(face)
 
     def update_cube(self, new_cube_array):
         self.cube_array = new_cube_array
-        for i in range(6):
+        for i, face in enumerate(self.cube_entity.children):
             for row in range(3):
                 for col in range(3):
-                    self.faces[i].children[row * 3 + col].color = self.color_map[self.cube_array[i, row, col]]
+                    face.children[row * 3 + col].color = self.color_map[self.cube_array[i, row, col]]
+
+    def input(self, key):
+        # Start tracking mouse drag
+        if key == 'left mouse down':
+            self.mouse_start = mouse.position
+        elif key == 'left mouse up':
+            self.mouse_start = None
+
+    def update(self):
+        # Rotate the cube while dragging the mouse
+        if held_keys['left mouse'] and self.mouse_start:
+            drag = mouse.position - self.mouse_start
+            self.cube_entity.rotation_y += drag.x * 100  # Rotate around Y-axis based on X drag
+            self.cube_entity.rotation_x -= drag.y * 100  # Rotate around X-axis based on Y drag
+            self.mouse_start = mouse.position
 
     def run(self):
         self.app.run()
-
-

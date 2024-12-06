@@ -32,4 +32,6 @@ for m in s:
 
 initial_cube = Cube()  # Create the Cube instance
 cube_visualizer = CubeVisualizer(initial_cube.cube)
+cube_visualizer.app.input = cube_visualizer.input
+cube_visualizer.app.update = cube_visualizer.update
 cube_visualizer.run()
