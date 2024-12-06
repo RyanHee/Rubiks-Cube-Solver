@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from Cube import Cube
+from Rubiks_Cube import Cube
 
 
 class MyTestCase(unittest.TestCase):

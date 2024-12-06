@@ -1,4 +1,5 @@
-from Cube import Cube
+from Rubiks_Cube import Cube
+from Rubiks_Cube import CubeVisualizer
 
 '''
 test_cube_lst = [
@@ -28,3 +29,7 @@ for m in s:
     print(m)
     c.move(m)
     print(c.cube)
+
+initial_cube = Cube()  # Create the Cube instance
+cube_visualizer = CubeVisualizer(initial_cube.cube)
+cube_visualizer.run()
