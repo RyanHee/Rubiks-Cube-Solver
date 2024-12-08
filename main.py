@@ -1,6 +1,7 @@
 from Rubiks_Cube import Cube
 from Rubiks_Cube import CubeVisualizer
 
+
 '''
 test_cube_lst = [
     [['W' for _ in range(3)] for _ in range(3)],
@@ -21,17 +22,15 @@ with open('cube_init.txt', 'r') as f:
             lst[i] = [it for it in lst[i]]
         test_cube_lst.append(lst)
 
-print(test_cube_lst)
+#print(test_cube_lst)
 c = Cube(test_cube_lst)
-s = 'R U R\' F\' R U R\' U\' R\' F R2 U\' R\' U\''.split()
 
-for m in s:
-    print(m)
-    c.move(m)
-    print(c.cube)
 
-initial_cube = Cube()  # Create the Cube instance
+initial_cube = Cube()
+initial_cube.R()
 cube_visualizer = CubeVisualizer(initial_cube.cube)
+
 cube_visualizer.app.input = cube_visualizer.input
 cube_visualizer.app.update = cube_visualizer.update
+
 cube_visualizer.run()
