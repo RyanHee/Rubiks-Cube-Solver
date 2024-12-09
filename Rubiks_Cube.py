@@ -1,5 +1,6 @@
 import numpy as np
 from ursina import *
+from ursina.shaders import unlit_shader
 
 
 class Cube:
@@ -76,6 +77,7 @@ class Cube:
                 if it == 4:
                     for i in range(3):
                         temp.append(self.cube[it, i, 0])
+                    temp.reverse()
                 else:
                     for i in range(3):
                         temp.append(self.cube[it, i, 2])
@@ -101,15 +103,25 @@ class Cube:
             lst = []
             for it in faces:
                 temp = []
-                for i in range(3):
-                    temp.append(self.cube[it, i, 2])
+                if it == 4:
+                    for i in range(3):
+                        temp.append(self.cube[it, i, 0])
+                    temp.reverse()
+                else:
+                    for i in range(3):
+                        temp.append(self.cube[it, i, 2])
                 lst.append(temp)
             lst.insert(0, lst.pop())
             lst.reverse()
             for it in faces:
                 temp = lst.pop()
-                for i in range(3):
-                    self.cube[it, i, 2] = temp[i]
+                #print(temp)
+                if it == 4:
+                    for i in range(3):
+                        self.cube[it, i, 0] = temp[i]
+                else:
+                    for i in range(3):
+                        self.cube[it, i, 2] = temp[i]
             # rotate right side (red)
             self.cube[3] = np.rot90(self.cube[3])
         #print(self.cube)
@@ -121,15 +133,24 @@ class Cube:
             lst = []
             for it in faces:
                 temp = []
-                for i in range(3):
-                    temp.append(self.cube[it, i, 0])
+                if it == 4:
+                    for i in range(3):
+                        temp.append(self.cube[it, i, 2])
+                    temp.reverse()
+                else:
+                    for i in range(3):
+                        temp.append(self.cube[it, i, 0])
                 lst.append(temp)
             lst.insert(0, lst.pop())
             lst.reverse()
             for it in faces:
                 temp = lst.pop()
-                for i in range(3):
-                    self.cube[it, i, 0] = temp[i]
+                if it == 4:
+                    for i in range(3):
+                        self.cube[it, i, 2] = temp[i]
+                else:
+                    for i in range(3):
+                        self.cube[it, i, 0] = temp[i]
             # rotate left side (orange)
             self.cube[1] = np.rot90(self.cube[1], k=3)
         #print(self.cube)
@@ -141,15 +162,24 @@ class Cube:
             lst = []
             for it in faces:
                 temp = []
-                for i in range(3):
-                    temp.append(self.cube[it, i, 0])
+                if it == 4:
+                    for i in range(3):
+                        temp.append(self.cube[it, i, 2])
+                    temp.reverse()
+                else:
+                    for i in range(3):
+                        temp.append(self.cube[it, i, 0])
                 lst.append(temp)
             lst.append(lst.pop(0))
             lst.reverse()
             for it in faces:
                 temp = lst.pop()
-                for i in range(3):
-                    self.cube[it, i, 0] = temp[i]
+                if it == 4:
+                    for i in range(3):
+                        self.cube[it, i, 2] = temp[i]
+                else:
+                    for i in range(3):
+                        self.cube[it, i, 0] = temp[i]
             # rotate left side (orange)
             self.cube[1] = np.rot90(self.cube[1])
         #print(self.cube)
@@ -295,10 +325,24 @@ class Cube:
         #print(self.cube)
 
 
+class Cubelet:
+    def __init__(self):
+        self.colors = [""] * 6
+
+
 class CubeVisualizer:
-    def __init__(self, cube_array):
+    def __init__(self, cube):
+
+        self.cube = cube
+        self.cubelet_entities = {}
+        self.cube_array = np.array(cube.cube)
+        assert self.cube_array.shape == (6, 3, 3), "cube_array must be shape (6,3,3)"
+
+        # Initialize cubelets data (3x3x3)
+        self.cubelets = [[[Cubelet() for _ in range(3)] for _ in range(3)] for _ in range(3)]
+
+        # Ursina setup
         self.app = Ursina()
-        self.cube_array = cube_array
         self.color_map = {
             'W': color.white,
             'O': color.orange,
@@ -307,68 +351,165 @@ class CubeVisualizer:
             'B': color.blue,
             'Y': color.yellow
         }
+
         self.cube_entity = Entity()
+        self.mouse_start = None
+        self.cube_entity.shader = unlit_shader
+
+        self._assign_colors()
+
         self.build_cube()
-        self.mouse_start = None  # Track mouse drag start position
+
+        EditorCamera()
+        DirectionalLight(parent=scene, direction=(1, -1, -1), color=color.white)
+        Sky()
+
+        def global_input(key):
+            self.input(key)
+
+        def global_update():
+            self.update()
+
+        window.input = global_input
+        window.update = global_update
+
+        test_cubelet = self.cubelets[2][2][2]  # front-top-right corner, for instance
+        print("Test cubelet colors:", test_cubelet.colors)
+
+    def create_solved_array(self):
+        lst = ['W', 'O', 'G', 'R', 'B', 'Y']
+        temp = []
+        for c in lst:
+            face = [[c for _ in range(3)] for _ in range(3)]
+            temp.append(face)
+        return temp
+
+    def _assign_colors(self):
+
+        print(self.cube_array[0])
+        for row in range(3):
+            for col in range(3):
+                color_char = self.cube_array[0, row, col]
+                x = col - 1
+                y = 1
+                z = 1 - row
+                self._set_cubelet_face(x, y, z, 0, color_char)
+
+
+        for row in range(3):
+            for col in range(3):
+                color_char = self.cube_array[5, row, col]
+                x = col - 1
+                y = -1
+                z = row - 1
+                self._set_cubelet_face(x, y, z, 5, color_char)
+
+        for row in range(3):
+            for col in range(3):
+                color_char = self.cube_array[2, row, col]
+                print(color_char)
+
+                x = col - 1
+                y = 1 - row
+                z = -1
+                self._set_cubelet_face(x, y, z, 4, color_char)
+
+
+        for row in range(3):
+            for col in range(3):
+                color_char = self.cube_array[4, row, col]
+                x = 1 - col
+                y = 1 - row
+                z = 1
+                self._set_cubelet_face(x, y, z, 2, color_char)
+
+
+
+        for row in range(3):
+            for col in range(3):
+                color_char = self.cube_array[1, row, col]
+                x = -1
+                y = 1 - row
+                z = 1 - col
+                self._set_cubelet_face(x, y, z, 1, color_char)
+
+        for row in range(3):
+            for col in range(3):
+                color_char = self.cube_array[3, row, col]
+                x = 1
+                y = 1 - row
+                z = col - 1
+                self._set_cubelet_face(x, y, z, 3, color_char)
+
+    def _set_cubelet_face(self, x, y, z, face_index, color_char):
+        xi = x + 1
+        yi = y + 1
+        zi = z + 1
+        self.cubelets[zi][yi][xi].colors[face_index] = color_char
 
     def build_cube(self):
-        # Create all 6 faces
-        face_positions = [
-            Vec3(0, 0, 1),  # Front
-            Vec3(0, 0, -1),  # Back
-            Vec3(0, 1, 0),  # Top
-            Vec3(0, -1, 0),  # Bottom
-            Vec3(-1, 0, 0),  # Left
-            Vec3(1, 0, 0),  # Right
-        ]
-        face_rotations = [
-            Vec3(0, 0, 0),  # Front
-            Vec3(0, 180, 0),  # Back
-            Vec3(90, 0, 0),  # Top
-            Vec3(-90, 0, 0),  # Bottom
-            Vec3(0, 90, 0),  # Left
-            Vec3(0, -90, 0),  # Right
-        ]
+        # Create entities for cubelets
+        for zi in range(3):
+            for yi in range(3):
+                for xi in range(3):
+                    cubelet = self.cubelets[zi][yi][xi]
+                    x = xi - 1
+                    y = yi - 1
+                    z = zi - 1
 
-        for i in range(6):  # Loop through faces
-            face = Entity(parent=self.cube_entity)
-            for row in range(3):
-                for col in range(3):
-                    cubelet = Entity(
-                        parent=face,
-                        model='quad',
-                        color=self.color_map[self.cube_array[i, row, col]],
-                        position=Vec3(col - 1, 1 - row, 0),  # Arrange in a 3x3 grid
-                        scale=0.9  # Small spacing between tiles
-                    )
-                    face.children[row * 3 + col] = cubelet
-            face.position = face_positions[i]
-            face.rotation = face_rotations[i]
+                    cubelet_entity = Entity(parent=self.cube_entity,
+                                            position=(x, y, z),
+                                            model='cube',
+                                            scale=0.9,
+                                            color=color.black,
+                                            visible=True)
+                    self.cubelet_entities[(x, y, z)] = cubelet_entity
+                    self.add_stickers(cubelet_entity, cubelet)
 
-    def update_cube(self, new_cube_array):
-        self.cube_array = new_cube_array
-        for i, face in enumerate(self.cube_entity.children):
-            for row in range(3):
-                for col in range(3):
-                    face.children[row * 3 + col].color = self.color_map[self.cube_array[i, row, col]]
+    def add_stickers(self, parent_entity, cubelet):
+        # Face directions:
+        directions = {
+            0: ((0, 0.55, 0), (90, 0, 0)),  # Up (White)
+            5: ((0, -0.55, 0), (-90, 0, 0)),  # Down (Yellow)
+            2: ((0, 0, 0.55), (0, 180, 0)),  # Front (Green)
+            4: ((0, 0, -0.55), (0, 0, 0)),  # Back (Blue)
+            1: ((-0.55, 0, 0), (0, 90, 0)),  # Left (Orange)
+            3: ((0.55, 0, 0), (0, -90, 0))  # Right (Red)
+        }
+
+        '''directions = {
+            0: ((0, 0.55, 0), (00, 0, 0)),  # Up (White)
+            5: ((0, -0.55, 0), (0, 0, 0)),  # Down (Yellow)
+            2: ((0, 0, 0.55), (0, 0, 0)),  # Front (Green)
+            4: ((0, 0, -0.55), (0, 0, 0)),  # Back (Blue)
+            1: ((-0.55, 0, 0), (0, 0, 0)),  # Left (Orange)
+            3: ((0.55, 0, 0), (0, 0, 0))  # Right (Red)
+        }'''
+
+        for face_index, face_color_char in enumerate(cubelet.colors):
+            if face_color_char in self.color_map and face_color_char != "":
+                local_pos, local_rot = directions[face_index]
+                Entity(parent=parent_entity,
+                       model='quad',
+                       scale=0.9,
+                       position=local_pos,
+                       rotation=local_rot,
+                       color=self.color_map[face_color_char])
+
+    def get_cubelet_entity(self, x, y, z):
+        return self.cubelet_entities.get((x, y, z), None)
 
     def input(self, key):
-        # Start tracking mouse drag
-        print(key)
-        print(held_keys)
-        if held_keys['left mouse']:
+        if key == 'left mouse down':
             self.mouse_start = mouse.position
         elif key == 'left mouse up':
             self.mouse_start = None
-        elif key == 'mouse1 up':
-            self.mouse_start = None
 
     def update(self):
-        print(held_keys['left mouse'], self.mouse_start)
-        if held_keys['left mouse'] and self.mouse_start:
+        if mouse.left and self.mouse_start is not None:
             drag = mouse.position - self.mouse_start
-            self.cube_entity.rotation_y += drag.x * 50
-            self.cube_entity.rotation_x -= drag.y * 50
+            self.cube_entity.rotation_y += drag.x * 100
+            self.cube_entity.rotation_x -= drag.y * 100
             self.mouse_start = mouse.position
 
     def run(self):
