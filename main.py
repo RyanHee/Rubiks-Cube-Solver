@@ -2,11 +2,9 @@ from Rubiks_Cube import Cube
 from Rubiks_Cube import CubeVisualizer
 
 
+
 def input(key):
     cube_visualizer.input(key)
-
-def update():
-    cube_visualizer.update()
 
 #print(test_cube_lst)
 test_cube_lst = []
@@ -23,3 +21,4 @@ c = Cube(test_cube_lst)
 
 cube_visualizer = CubeVisualizer(c)
 cube_visualizer.run()
+moves = 'R U R\' U\''

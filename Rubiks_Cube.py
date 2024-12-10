@@ -338,7 +338,7 @@ class CubeVisualizer:
         self.core = Entity()
         self.cubelets = [[[Cubelet() for _ in range(3)] for _ in range(3)] for _ in range(3)]
         self.turn_duration = 1
-        self.can_action=True
+        self.can_action = True
         self.app = Ursina()
         self.cube_entity = Entity()
         self.mouse_start = None
@@ -346,7 +346,7 @@ class CubeVisualizer:
 
         self._assign_colors()
         self.build_cube()
-        print(self.cubelet_entities)
+
         EditorCamera()
         DirectionalLight(parent=scene, direction=(1, -1, -1), color=color.white)
         Sky()
@@ -354,23 +354,19 @@ class CubeVisualizer:
         def global_input(key):
             self.input(key)
 
-        def global_update():
-            self.update()
-
         window.input = global_input
-        window.update = global_update
 
     def init_maps(self):
         self.cubelet_entities = {}
 
         # x y z
         self.cube_to_rot = {
-            'R': [(1, y, z) for y in range(-1,2) for z in range(-1,2)],
-            'L': [(-1, y, z) for y in range(-1,2) for z in range(-1,2)],
-            'U': [(x, 1, z) for x in range(-1,2) for z in range(-1,2)],
-            'D': [(x, -1, z) for x in range(-1,2) for z in range(-1,2)],
-            'F': [(x, y, 1) for x in range(-1,2) for y in range(-1,2)],
-            'B': [(x, y, -1) for x in range(-1,2) for y in range(-1,2)],
+            'R': [(1, y, z) for y in range(-1, 2) for z in range(-1, 2)],
+            'L': [(-1, y, z) for y in range(-1, 2) for z in range(-1, 2)],
+            'U': [(x, 1, z) for x in range(-1, 2) for z in range(-1, 2)],
+            'D': [(x, -1, z) for x in range(-1, 2) for z in range(-1, 2)],
+            'B': [(x, y, 1) for x in range(-1, 2) for y in range(-1, 2)],
+            'F': [(x, y, -1) for x in range(-1, 2) for y in range(-1, 2)],
         }
 
         self.rot_axis = {
@@ -388,14 +384,23 @@ class CubeVisualizer:
             '2': '180'
         }
 
-        self.color_map = {
+        '''self.color_map = {
             'W': color.white,
             'O': color.orange,
             'G': color.green,
             'R': color.red,
             'B': color.blue,
             'Y': color.yellow
+        }'''
+        self.color_map = {
+            'W': 'textures/W.png',
+            'O': 'textures/O.png',
+            'G': 'textures/G.png',
+            'R': 'textures/R.png',
+            'B': 'textures/B.png',
+            'Y': 'textures/Y.png'
         }
+
 
     def create_solved_array(self):
         lst = ['W', 'O', 'G', 'R', 'B', 'Y']
@@ -502,7 +507,8 @@ class CubeVisualizer:
                        scale=0.9,
                        position=local_pos,
                        rotation=local_rot,
-                       color=self.color_map[face_color_char])
+                       texture=self.color_map[face_color_char],
+                       shader=unlit_shader)
 
     def input(self, key):
         print(key)
@@ -516,20 +522,25 @@ class CubeVisualizer:
             self.rotate(key.upper())
 
     def reparent(self):
-        for xi in range(-1,2):
-            for yi in range(-1,2):
-                for zi in range(-1,2):
+        temp = {}
+        for xi in range(-1, 2):
+            for yi in range(-1, 2):
+                for zi in range(-1, 2):
                     cubelet_entity = self.cubelet_entities[(xi, yi, zi)]
                     if cubelet_entity.parent == self.core:
                         world_pos, world_rot = round(cubelet_entity.world_position, 1), cubelet_entity.world_rotation
-                        cubelet_entity.position, cubelet_entity.rotation = world_pos, world_rot
+                        print(f'prev: {cubelet_entity.position}')
+                        cubelet_entity.position, cubelet_entity.rotation = round(world_pos), world_rot
+                        print(f'after: {cubelet_entity.position}')
                         cubelet_entity.parent = self.cube_entity
+                    temp[tuple(map(round, cubelet_entity.position))] = cubelet_entity
+        self.cubelet_entities = temp
         self.core.rotation = 0
 
     def rotate(self, move):
         print(move)
-        self.can_action=False
-        #self.reparent()
+        self.can_action = False
+        self.reparent()
         rotate_axis = self.rot_axis[move[0]]
         temp_s = ''
         if len(move) != 1:
@@ -538,21 +549,11 @@ class CubeVisualizer:
         for xi, yi, zi in self.cube_to_rot[move]:
             cubelet_entity = self.cubelet_entities[(xi, yi, zi)]
             cubelet_entity.parent = self.core
-
             eval(f'self.core.animate_rotation_{rotate_axis}({rotate_angle}, duration = self.turn_duration)')
-        invoke(self.reparent, delay=self.turn_duration+0.05)
-        invoke(self.trigger_action, delay=self.turn_duration+0.05)
-
+        invoke(self.trigger_action, delay=self.turn_duration + 0.1)
 
     def trigger_action(self):
-        self.can_action=True
-
-    def update(self):
-        if mouse.left and self.mouse_start is not None:
-            drag = mouse.position - self.mouse_start
-            self.cube_entity.rotation_y += drag.x * 100
-            self.cube_entity.rotation_x -= drag.y * 100
-            self.mouse_start = mouse.position
+        self.can_action = True
 
     def run(self):
         self.app.run()
