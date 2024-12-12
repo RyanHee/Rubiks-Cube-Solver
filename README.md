@@ -10,7 +10,7 @@ run main.py
 
 # Controls
 r and t for right moves  
-l and ; for left moves
+l and ; for left moves  
 u and i for top layer moves  
 s and d for bottom layer moves  
 f and g for front layer moves  
