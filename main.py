@@ -1,8 +1,6 @@
 from Rubiks_Cube import Cube
 from Rubiks_Cube import CubeVisualizer
 
-
-
 def input(key):
     cube_visualizer.input(key)
 
@@ -15,10 +13,8 @@ with open('cube_init.txt', 'r') as f:
             lst[i] = [it for it in lst[i]]
         test_cube_lst.append(lst)
 
-#print(test_cube_lst)
 c = Cube(test_cube_lst)
-
 
 cube_visualizer = CubeVisualizer(c)
 cube_visualizer.run()
-moves = 'R U R\' U\''
+# moves = 'R U R\' U\''

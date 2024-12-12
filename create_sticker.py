@@ -1,5 +1,5 @@
 # for stickers
-from PIL import Image, ImageDraw
+from PIL import Image
 
 def add_black_outline(path, output_path, border_size=10):
     img = Image.open(path)
