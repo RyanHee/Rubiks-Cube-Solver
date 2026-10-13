@@ -1,0 +1,1054 @@
+{
+  "source": "https://www.cubeskills.com/uploads/pdf/tutorials/pll-algorithms.pdf",
+  "authors": [
+    "Feliks Zemdegs",
+    "Andy Klise"
+  ],
+  "face_order": [
+    "U",
+    "L",
+    "F",
+    "R",
+    "B",
+    "D"
+  ],
+  "solved_colors": {
+    "U": "W",
+    "L": "O",
+    "F": "G",
+    "R": "R",
+    "B": "B",
+    "D": "Y"
+  },
+  "cases": [
+    {
+      "name": "Ub",
+      "algorithm": "R2 U (R U R' U') R' U' (R' U R')",
+      "outer_algorithm": "R2 U R U R' U' R' U' R' U R'",
+      "diagram_bars": {
+        "B": "BBB",
+        "L": "ROR",
+        "F": "GRG",
+        "R": "OGO"
+      },
+      "diagram_color_map": {
+        "B": "B",
+        "R": "O",
+        "O": "R",
+        "G": "G"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "ORO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GOG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "RGR",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "BBB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Ua",
+      "algorithm": "(R U' R U) R U (R U' R' U') R2",
+      "outer_algorithm": "R U' R U R U R U' R' U' R2",
+      "diagram_bars": {
+        "B": "BBB",
+        "L": "RGR",
+        "F": "GOG",
+        "R": "ORO"
+      },
+      "diagram_color_map": {
+        "B": "B",
+        "R": "O",
+        "G": "G",
+        "O": "R"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "OGO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GRG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "ROR",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "BBB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Z",
+      "algorithm": "(M2' U M2' U) (M' U2) (M2' U2 M') [U2]",
+      "outer_algorithm": "R L' R L' D R L' R L' U R L' R L' R L' F2 R L' R L' B2 R L' R L' R L' U2",
+      "diagram_bars": {
+        "B": "BRB",
+        "L": "RBR",
+        "F": "GOG",
+        "R": "OGO"
+      },
+      "diagram_color_map": {
+        "B": "B",
+        "R": "O",
+        "G": "G",
+        "O": "R"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "OBO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GRG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "RGR",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "BOB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "H",
+      "algorithm": "(M2' U M2') U2 (M2' U M2')",
+      "outer_algorithm": "R L' R L' D R L' R L' U2 R L' R L' D R L' R L'",
+      "diagram_bars": {
+        "B": "ORO",
+        "L": "BGB",
+        "F": "ROR",
+        "R": "GBG"
+      },
+      "diagram_color_map": {
+        "O": "B",
+        "R": "G",
+        "B": "O",
+        "G": "R"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "ORO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GBG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "ROR",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "BGB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Aa",
+      "algorithm": "x (R' U R') D2 (R U' R') D2 R2 x'",
+      "outer_algorithm": "R' F R' B2 R F' R' B2 R2",
+      "diagram_bars": {
+        "B": "GOG",
+        "L": "OBB",
+        "F": "RRO",
+        "R": "RGB"
+      },
+      "diagram_color_map": {
+        "G": "R",
+        "O": "B",
+        "B": "O",
+        "R": "G"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "BOO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GGB",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "ORG",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "RBR",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Ab",
+      "algorithm": "x R2' D2 (R U R') D2 (R U' R) x'",
+      "outer_algorithm": "R2 B2 R F R' B2 R F' R",
+      "diagram_bars": {
+        "B": "ROB",
+        "L": "GBB",
+        "F": "RRG",
+        "R": "OGO"
+      },
+      "diagram_color_map": {
+        "B": "O",
+        "O": "B",
+        "R": "G",
+        "G": "R"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "ROO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GGR",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "BRB",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "OBG",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "E",
+      "algorithm": "x' (R U' R' D) (R U R' D') (R U R' D) (R U' R' D') x",
+      "outer_algorithm": "R B' R' F R B R' F' R B R' F R B' R' F'",
+      "diagram_bars": {
+        "B": "BOG",
+        "L": "RBO",
+        "F": "BRG",
+        "R": "RGO"
+      },
+      "diagram_color_map": {
+        "G": "R",
+        "O": "B",
+        "B": "O",
+        "R": "G"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "GOB",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "OGR",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "BRG",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "RBO",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Ra",
+      "algorithm": "(R U' R' U') (R U R D) (R' U' R D') (R' U2 R') [U']",
+      "outer_algorithm": "R U' R' U' R U R D R' U' R D' R' U2 R' U'",
+      "diagram_bars": {
+        "B": "BRO",
+        "L": "RBR",
+        "F": "GGO",
+        "R": "GOB"
+      },
+      "diagram_color_map": {
+        "O": "R",
+        "R": "O",
+        "B": "B",
+        "G": "G"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "OBO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GGR",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "BRG",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "ROB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Rb",
+      "algorithm": "(R' U2 R U2') R' F (R U R' U') R' F' R2 [U']",
+      "outer_algorithm": "R' U2 R U2 R' F R U R' U' R' F' R2 U'",
+      "diagram_bars": {
+        "B": "GOB",
+        "L": "OBB",
+        "F": "RGR",
+        "R": "ORG"
+      },
+      "diagram_color_map": {
+        "B": "O",
+        "O": "B",
+        "G": "R",
+        "R": "G"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "BOO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GRG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "RGB",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "OBR",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Ja",
+      "algorithm": "(R' U L' U2) (R U' R' U2 R) L [U']",
+      "outer_algorithm": "R' U L' U2 R U' R' U2 R L U'",
+      "diagram_bars": {
+        "B": "ORR",
+        "L": "BBR",
+        "F": "GGG",
+        "R": "BOO"
+      },
+      "diagram_color_map": {
+        "R": "O",
+        "O": "R",
+        "B": "B",
+        "G": "G"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "BBO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GGG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "RRB",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "OOR",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Jb",
+      "algorithm": "(R U R' F') (R U R' U') R' F R2 U' R' [U']",
+      "outer_algorithm": "R U R' F' R U R' U' R' F R2 U' R' U'",
+      "diagram_bars": {
+        "B": "OOG",
+        "L": "BBB",
+        "F": "RGG",
+        "R": "RRO"
+      },
+      "diagram_color_map": {
+        "G": "R",
+        "O": "B",
+        "B": "O",
+        "R": "G"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "OOO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GRR",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "BGG",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "RBB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "T",
+      "algorithm": "(R U R' U') (R' F R2 U') R' U' (R U R' F')",
+      "outer_algorithm": "R U R' U' R' F R2 U' R' U' R U R' F'",
+      "diagram_bars": {
+        "B": "OOG",
+        "L": "BGB",
+        "F": "RRG",
+        "R": "RBO"
+      },
+      "diagram_color_map": {
+        "G": "R",
+        "O": "B",
+        "B": "O",
+        "R": "G"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "ORO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GGR",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "BOG",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "RBB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "F",
+      "algorithm": "(R' U' F')(R U R' U')(R' F R2 U')(R' U' R U)(R' U R)",
+      "outer_algorithm": "R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R",
+      "diagram_bars": {
+        "B": "BGO",
+        "L": "RRR",
+        "F": "GBO",
+        "R": "GOB"
+      },
+      "diagram_color_map": {
+        "O": "R",
+        "G": "G",
+        "B": "B",
+        "R": "O"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "OOO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GBR",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "BRG",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "RGB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "V",
+      "algorithm": "(R' U R' U') y (R' F' R2 U') (R' U R' F) R F",
+      "outer_algorithm": "R' U R' U' B' R' B2 U' B' U B' R B R",
+      "diagram_bars": {
+        "B": "RGO",
+        "L": "GBB",
+        "F": "RRO",
+        "R": "GOB"
+      },
+      "diagram_color_map": {
+        "O": "B",
+        "G": "R",
+        "R": "G",
+        "B": "O"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "ROO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GGB",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "OBR",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "BRG",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Y",
+      "algorithm": "F (R U' R' U') (R U R' F') (R U R' U') (R' F R F')",
+      "outer_algorithm": "F R U' R' U' R U R' F' R U R' U' R' F R F'",
+      "diagram_bars": {
+        "B": "RBO",
+        "L": "GOB",
+        "F": "RRO",
+        "R": "GGB"
+      },
+      "diagram_color_map": {
+        "O": "B",
+        "B": "O",
+        "R": "G",
+        "G": "R"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "RBO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GGB",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "ORR",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "BOG",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Na",
+      "algorithm": "(RUR'U)(RUR'F')(RUR'U')(R'FR2U') R' U2 (RU'R')",
+      "outer_algorithm": "R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'",
+      "diagram_bars": {
+        "B": "OOR",
+        "L": "BGG",
+        "F": "ORR",
+        "R": "BBG"
+      },
+      "diagram_color_map": {
+        "R": "G",
+        "O": "B",
+        "B": "O",
+        "G": "R"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "ORR",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "BGG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "ROO",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "GBB",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Nb",
+      "algorithm": "(R' U R U') (R' F' U' F) (R U R' F) R' F' (R U' R)",
+      "outer_algorithm": "R' U R U' R' F' U' F R U R' F R' F' R U' R",
+      "diagram_bars": {
+        "B": "ROO",
+        "L": "GGB",
+        "F": "RRO",
+        "R": "GBB"
+      },
+      "diagram_color_map": {
+        "O": "B",
+        "R": "G",
+        "G": "R",
+        "B": "O"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "RRO",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "GGB",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "OOR",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "BBG",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Ga",
+      "algorithm": "R2 U (R' U R' U') (R U' R2) D U' (R' U R D') [U]",
+      "outer_algorithm": "R2 U R' U R' U' R U' R2 D U' R' U R D' U",
+      "diagram_bars": {
+        "B": "GBR",
+        "L": "OGO",
+        "F": "BRR",
+        "R": "BOG"
+      },
+      "diagram_color_map": {
+        "R": "G",
+        "B": "O",
+        "G": "R",
+        "O": "B"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "BRB",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "OGG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "RBO",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "GOR",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Gb",
+      "algorithm": "(F' U' F) (R2 u R' U) (R U' R u') R2'",
+      "outer_algorithm": "F' U' F R2 D B' U B U' B D' R2",
+      "diagram_bars": {
+        "B": "ORO",
+        "L": "BGR",
+        "F": "GBB",
+        "R": "GOR"
+      },
+      "diagram_color_map": {
+        "O": "O",
+        "R": "R",
+        "B": "G",
+        "G": "B"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "GBR",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "BGG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "ROB",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "ORO",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Gc",
+      "algorithm": "R2 U' (R U' R U) (R' U R2 D') (U R U' R') D [U']",
+      "outer_algorithm": "R2 U' R U' R U R' U R2 D' U R U' R' D U'",
+      "diagram_bars": {
+        "B": "GRR",
+        "L": "OBO",
+        "F": "BGR",
+        "R": "BOG"
+      },
+      "diagram_color_map": {
+        "R": "B",
+        "G": "O",
+        "O": "G",
+        "B": "R"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "GRG",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "ROB",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "OGR",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "BBO",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    },
+    {
+      "name": "Gd",
+      "algorithm": "D' (R U R' U') D (R2 U' R U') (R' U R' U) R2 [U]",
+      "outer_algorithm": "D' R U R' U' D R2 U' R U' R' U R' U R2 U",
+      "diagram_bars": {
+        "B": "GBR",
+        "L": "ORO",
+        "F": "BOR",
+        "R": "BGG"
+      },
+      "diagram_color_map": {
+        "R": "G",
+        "B": "O",
+        "G": "R",
+        "O": "B"
+      },
+      "initial_faces": {
+        "U": [
+          "WWW",
+          "WWW",
+          "WWW"
+        ],
+        "L": [
+          "BGB",
+          "OOO",
+          "OOO"
+        ],
+        "F": [
+          "OBG",
+          "GGG",
+          "GGG"
+        ],
+        "R": [
+          "RRO",
+          "RRR",
+          "RRR"
+        ],
+        "B": [
+          "GOR",
+          "BBB",
+          "BBB"
+        ],
+        "D": [
+          "YYY",
+          "YYY",
+          "YYY"
+        ]
+      }
+    }
+  ]
+}

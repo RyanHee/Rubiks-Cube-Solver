@@ -1,0 +1,12 @@
+All mappings refer to each sticker as a letter defined in rubik's cube blindfolded.
+For corners, go from faces white -> orange -> green -> red -> blue -> yellow, for each face, start at top left, go in clockwise alphabetically, so white sticker of white orange blue would be a, orange sticker of orange green yellow would be g
+
+Edges follow similar logic, but starts at top sticker, so white sticker of white-orange is d, green sticker of orange-green is l 
+
+Corners:
+Corner mapping: number of cw twists needed to orient the corner given the letter is at the top/bottom face
+
+Edge:
+Edge mapping: number of flips needed for an edge sticker at white yellow face if edge does not have white/yellow, orientation to blue or green is calculated.
+
+Both result in a value mod 2/3, so their mapping would be calculated in increasing lexicographical order for each modulus

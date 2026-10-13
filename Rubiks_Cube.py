@@ -1,6 +1,32 @@
+import sys
+
 import numpy as np
+from panda3d.core import loadPrcFileData, TransparencyAttrib
+
+# macOS exposes modern GLSL only through an OpenGL core context.
+if sys.platform == 'darwin':
+    loadPrcFileData('', 'gl-version 3 2')
+
 from ursina import *
 from ursina.shaders import unlit_shader
+from ursina.shaders.unlit_with_fog_shader import unlit_with_fog_shader
+from ursina.shaders.text_shader import text_shader
+
+if sys.platform == 'darwin':
+    # These shaders also serve Ursina's UI and sky. Their syntax is compatible
+    # with GLSL 150, the minimum shader version for macOS's core context.
+    _mac_shader_replacements = {}
+    for shader in (unlit_shader, unlit_with_fog_shader, text_shader):
+        previous_shader = getattr(shader, '_shader', None)
+        shader.vertex = shader.vertex.replace('#version 130', '#version 150')
+        shader.fragment = shader.fragment.replace('#version 140', '#version 150')
+        shader.compile()
+        if previous_shader is not None:
+            _mac_shader_replacements[previous_shader] = shader._shader
+    # Ursina creates some UI entities during import, before this setup runs.
+    for entity in scene.entities:
+        if entity.shader in (unlit_shader, unlit_with_fog_shader, text_shader):
+            entity.shader = entity.shader
 
 
 class Cube:
@@ -88,7 +114,7 @@ class Cube:
                 temp = lst.pop()
                 if it == 4:
                     for i in range(3):
-                        self.cube[it, i, 0] = temp[i]
+                        self.cube[it, i, 0] = temp[2 - i]
                 else:
                     for i in range(3):
                         self.cube[it, i, 2] = temp[i]
@@ -118,7 +144,7 @@ class Cube:
                 #print(temp)
                 if it == 4:
                     for i in range(3):
-                        self.cube[it, i, 0] = temp[i]
+                        self.cube[it, i, 0] = temp[2 - i]
                 else:
                     for i in range(3):
                         self.cube[it, i, 2] = temp[i]
@@ -147,7 +173,7 @@ class Cube:
                 temp = lst.pop()
                 if it == 4:
                     for i in range(3):
-                        self.cube[it, i, 2] = temp[i]
+                        self.cube[it, i, 2] = temp[2 - i]
                 else:
                     for i in range(3):
                         self.cube[it, i, 0] = temp[i]
@@ -176,7 +202,7 @@ class Cube:
                 temp = lst.pop()
                 if it == 4:
                     for i in range(3):
-                        self.cube[it, i, 2] = temp[i]
+                        self.cube[it, i, 2] = temp[2 - i]
                 else:
                     for i in range(3):
                         self.cube[it, i, 0] = temp[i]
@@ -226,11 +252,11 @@ class Cube:
             self.cube[0, 0] = lst.pop()
             temp = lst.pop()
             for i in range(3):
-                self.cube[3, i, 2] = temp[i]
+                self.cube[3, i, 2] = temp[2 - i]
             self.cube[5, 2] = lst.pop()
             temp = lst.pop()
             for i in range(3):
-                self.cube[1, i, 0] = temp[i]
+                self.cube[1, i, 0] = temp[2 - i]
             # rotate back side (blue)
             self.cube[4] = np.rot90(self.cube[4], k=3)
         #print(self.cube)
@@ -242,11 +268,11 @@ class Cube:
                    self.cube[5, 2].copy(), [self.cube[1, 0, 0], self.cube[1, 1, 0], self.cube[1, 2, 0]]]
             lst.insert(0, lst.pop())
             lst.reverse()
-            self.cube[0, 0] = lst.pop()
+            self.cube[0, 0] = lst.pop()[::-1]
             temp = lst.pop()
             for i in range(3):
                 self.cube[3, i, 2] = temp[i]
-            self.cube[5, 2] = lst.pop()
+            self.cube[5, 2] = lst.pop()[::-1]
             temp = lst.pop()
             for i in range(3):
                 self.cube[1, i, 0] = temp[i]
@@ -261,11 +287,11 @@ class Cube:
                    self.cube[5, 0].copy(), [self.cube[1, 0, 2], self.cube[1, 1, 2], self.cube[1, 2, 2]]]
             lst.insert(0, lst.pop())
             lst.reverse()
-            self.cube[0, 2] = lst.pop()
+            self.cube[0, 2] = lst.pop()[::-1]
             temp = lst.pop()
             for i in range(3):
                 self.cube[3, i, 0] = temp[i]
-            self.cube[5, 0] = lst.pop()
+            self.cube[5, 0] = lst.pop()[::-1]
             temp = lst.pop()
             for i in range(3):
                 self.cube[1, i, 2] = temp[i]
@@ -283,11 +309,11 @@ class Cube:
             self.cube[0, 2] = lst.pop()
             temp = lst.pop()
             for i in range(3):
-                self.cube[3, i, 0] = temp[i]
+                self.cube[3, i, 0] = temp[2 - i]
             self.cube[5, 0] = lst.pop()
             temp = lst.pop()
             for i in range(3):
-                self.cube[1, i, 2] = temp[i]
+                self.cube[1, i, 2] = temp[2 - i]
             # rotate front side (green)
             self.cube[2] = np.rot90(self.cube[2])
         #print(self.cube)
@@ -330,6 +356,27 @@ class Cubelet:
         self.colors = [''] * 6
 
 
+class CubeCamera(EditorCamera):
+    min_zoom = 6
+    max_zoom = 40
+    min_fov = 6
+    max_fov = 60
+
+    def __setattr__(self, name, value):
+        if name == 'target_z':
+            value = clamp(value, -self.max_zoom, -self.min_zoom)
+        elif name == 'target_fov':
+            value = clamp(value, self.min_fov, self.max_fov)
+        super().__setattr__(name, value)
+
+    def update(self):
+        super().update()
+        if camera.orthographic:
+            camera.fov = clamp(camera.fov, self.min_fov, self.max_fov)
+        else:
+            camera.z = clamp(camera.z, -self.max_zoom, -self.min_zoom)
+
+
 class CubeVisualizer:
     def __init__(self, cube):
         self.init_maps()
@@ -340,6 +387,18 @@ class CubeVisualizer:
         self.turn_duration = 0.5
         self.can_action = True
         self.app = Ursina()
+        if sys.platform == 'darwin':
+            # Refresh shader references on nodes created during Ursina import.
+            for root in (self.app.render, self.app.render2d, camera.ui_render):
+                for node in root.findAllMatches('**'):
+                    replacement = _mac_shader_replacements.get(node.getShader())
+                    if replacement is not None:
+                        node.setShader(replacement)
+                    # Dual-pass transparency relies on alpha testing that is
+                    # unavailable in the macOS core context. Use alpha blending
+                    # so Ursina's clear fullscreen overlay stays transparent.
+                    if root == camera.ui_render and node.getTransparency() == TransparencyAttrib.M_dual:
+                        node.setTransparency(TransparencyAttrib.M_alpha)
         self.cube_entity = Entity()
         self.mouse_start = None
         self.cube_entity.shader = unlit_shader
@@ -347,8 +406,9 @@ class CubeVisualizer:
         self.assign_colors()
         self.build_cube()
 
-        EditorCamera()
-        DirectionalLight(parent=scene, direction=(1, -1, -1), color=color.white)
+        self.editor_camera = CubeCamera()
+        DirectionalLight(parent=scene, direction=(1, -1, -1), color=color.white,
+                         shadows=sys.platform != 'darwin')
         Sky()
 
         def global_input(key):
