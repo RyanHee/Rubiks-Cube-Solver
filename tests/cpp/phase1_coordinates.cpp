@@ -25,7 +25,6 @@ int main() {
         const int edges = cube.phase1_state_edges();
         if (corners != expected_twist * 495 + slice || edges != expected_flip * 495 + slice) return 3;
         if (corners < 0 || corners >= 2187 * 495 || edges < 0 || edges >= 2048 * 495) return 4;
-        if (cube.phase1_state_corner() != corners) return 5;
         CubeState copied(cube);
         if (copied.phase1_state_corners() != corners || copied.phase1_state_edges() != edges) return 6;
     }

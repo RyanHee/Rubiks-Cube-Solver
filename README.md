@@ -1,7 +1,8 @@
 # Rubiks-Cube-Solver
 
 A Python/Ursina cube visualizer with a C++ cubie-state implementation for a
-planned two-phase solver. Search and pattern databases are not implemented yet.
+planned two-phase solver. Pattern-database generation is implemented for both
+phases; search and database persistence are not implemented yet.
 
 ## Project layout
 
@@ -82,6 +83,23 @@ c++ -std=c++20 -I cpp/include your_program.cpp -o your_program
 
 The custom piece numbering is defined in `data/corner_mapping.json` and
 `data/edge_mapping.json`; its conventions are in [mapping rules](docs/mapping_rules.txt).
+
+`rubiks::generate_tables()` in `rubiks/table.hpp` generates all four pattern
+databases in memory. The existing `corner_distance` and `edge_distance` fields
+are for phase 1; `phase2_corner_distance` and `phase2_edge_distance` are for
+phase 2. Phase-2 tables have 967,680 entries each and use the 10 restricted moves.
+
+After `phase1_complete(cube)` is true, access their distances with:
+
+```cpp
+int corner_distance = tables.phase2_corner_distance[cube.phase2_state_corners()];
+int edge_distance = tables.phase2_edge_distance[cube.phase2_state_edges()];
+```
+
+The phase-2 indices combine a lexicographic 8-piece permutation rank with the
+4-piece slice permutation rank: `permutation * 24 + slice`. Slice pieces are
+IDs 4–7; U/D edges are IDs 0–3 and 8–11. The solved indices are zero. Table
+generation is runtime work; saving/loading the databases is not implemented yet.
 
 ## Development tools
 

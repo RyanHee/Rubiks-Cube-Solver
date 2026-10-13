@@ -125,6 +125,23 @@ constexpr std::array<std::array<int, 12>, 18> twist_e{{
 
 struct CubeState;
 inline void assert_valid_cube(const CubeState &cube);
+inline bool phase1_complete(const CubeState &cube);
+
+namespace detail {
+// Lexicographic (Lehmer) rank: identity = 0, reverse = N! - 1.
+template <std::size_t N>
+constexpr int permutation_rank(const std::array<int, N> &permutation) {
+    int rank = 0;
+    for (std::size_t i = 0; i < N; ++i) {
+        int smaller = 0;
+        for (std::size_t j = i + 1; j < N; ++j) {
+            smaller += permutation[j] < permutation[i];
+        }
+        rank = rank * static_cast<int>(N - i) + smaller;
+    }
+    return rank;
+}
+}
 
 struct CubeState {
     /**
@@ -195,6 +212,29 @@ struct CubeState {
         const int slice = slice_mapping.coordinate[slice_mask];
         assert(slice >= 0 && "slice mask must contain exactly four positions");
         return flip * 495 + slice;
+    }
+
+    int phase2_slice_permutation() const {
+        assert_valid_cube(*this);
+        assert(phase1_complete(*this) && "phase-2 coordinates require phase 1 complete");
+        const std::array<int, 4> slice{ep[4] - 4, ep[5] - 4, ep[6] - 4, ep[7] - 4};
+        return detail::permutation_rank(slice);
+    }
+
+    int phase2_state_corners() const {
+        const int slice = phase2_slice_permutation();
+        return detail::permutation_rank(cp) * 24 + slice;
+    }
+
+    int phase2_state_edges() const {
+        const int slice = phase2_slice_permutation();
+        constexpr std::array<int, 8> positions{0, 1, 2, 3, 8, 9, 10, 11};
+        std::array<int, 8> edges{};
+        for (std::size_t i = 0; i < positions.size(); ++i) {
+            const int piece = ep[positions[i]];
+            edges[i] = piece < 4 ? piece : piece - 4;
+        }
+        return detail::permutation_rank(edges) * 24 + slice;
     }
 };
 

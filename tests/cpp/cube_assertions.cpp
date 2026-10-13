@@ -30,6 +30,7 @@ int main(int argc, char** argv) {
     if (invalid == "twist_sum") cube.co[0] = 1;
     if (invalid == "flip_sum") cube.eo[0] = 1;
     if (invalid == "parity") std::swap(cube.cp[0], cube.cp[1]);
+    if (invalid == "phase1_incomplete") cube = apply_move(cube, Move::R);
     if (invalid == "move_low" || invalid == "move_high") {
         (void)apply_move(cube, static_cast<Move>(invalid == "move_low" ? -1 : 18));
         return 0;
@@ -40,5 +41,7 @@ int main(int argc, char** argv) {
     else if (operation == "phase1") (void)phase1_complete(cube);
     else if (operation == "phase2") (void)phase2_complete(cube);
     else if (operation == "solved") (void)solved(cube);
+    else if (operation == "phase2_corners") (void)cube.phase2_state_corners();
+    else if (operation == "phase2_edges") (void)cube.phase2_state_edges();
     else return 2;
 }

@@ -40,6 +40,25 @@ class CppAssertionTests(unittest.TestCase):
         ], check=True, capture_output=True, text=True)
         subprocess.run([str(executable)], check=True, capture_output=True)
 
+    def test_phase2_coordinates_and_generated_tables(self):
+        executable = Path(self.temp.name) / 'phase2_tables'
+        subprocess.run([
+            COMPILER, '-std=c++23', '-O2', '-DNDEBUG',
+            '-I', str(ROOT / 'cpp/include'),
+            str(ROOT / 'tests/cpp/phase2_tables.cpp'), '-o', str(executable),
+        ], check=True, capture_output=True, text=True)
+        subprocess.run([str(executable)], check=True, capture_output=True, timeout=60)
+
+    def test_phase2_coordinates_require_phase1_complete(self):
+        for operation in ('phase2_corners', 'phase2_edges'):
+            with self.subTest(operation=operation):
+                result = subprocess.run(
+                    [str(self.debug), 'phase1_incomplete', operation],
+                    capture_output=True, text=True,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('phase-2 coordinates require phase 1 complete', result.stderr)
+
     def test_invalid_arrays_are_rejected_before_each_operation(self):
         cases = {
             'cp_low': 'cp entries', 'cp_high': 'cp entries',
@@ -52,7 +71,7 @@ class CppAssertionTests(unittest.TestCase):
             'parity': 'permutation parity',
         }
         for case, message in cases.items():
-            for operation in ('apply', 'phase1', 'phase2', 'solved'):
+            for operation in ('apply', 'phase1', 'phase2', 'solved', 'phase2_corners', 'phase2_edges'):
                 with self.subTest(case=case, operation=operation):
                     result = subprocess.run(
                         [str(self.debug), case, operation],
