@@ -10,7 +10,7 @@ import unittest
 import numpy as np
 
 from cube_state import CubeState, CORNER_FACELETS, EDGE_FACELETS, MOVES
-from Rubiks_Cube import Cube
+from rubiks_cube.cube import Cube
 
 
 class CubeStateTests(unittest.TestCase):
@@ -43,7 +43,7 @@ class CubeStateTests(unittest.TestCase):
                 np.testing.assert_array_equal(state.to_facelets(), cube.cube)
 
     def test_all_pll_states_round_trip_and_solve(self):
-        path = Path(__file__).parent / 'tests/fixtures/pll_cases.json'
+        path = Path(__file__).resolve().parents[1] / 'fixtures/pll_cases.json'
         fixtures = json.loads(path.read_text())
         for case in fixtures['cases']:
             with self.subTest(case=case['name']):

@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from Rubiks_Cube import Cube
+from rubiks_cube.cube import Cube
 
 
 # Each number identifies the source sticker for that destination position.

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <cstddef>
 
 namespace rubiks {
@@ -145,7 +146,45 @@ struct CubeState {
     }
 };
 
+// Debug preconditions for a physically reachable cubie state. Array lengths
+// are already enforced by std::array. These checks disappear with NDEBUG.
+inline void assert_valid_cube([[maybe_unused]] const CubeState &cube) {
+#ifndef NDEBUG
+    std::array<bool, 8> seen_corners{};
+    std::array<bool, 12> seen_edges{};
+    int corner_twists = 0;
+    int edge_flips = 0;
+    int corner_parity = 0;
+    int edge_parity = 0;
+    for (std::size_t i = 0; i < cube.cp.size(); ++i) {
+        assert(cube.cp[i] >= 0 && cube.cp[i] < 8 && "cp entries must be in 0..7");
+        assert(!seen_corners[cube.cp[i]] && "cp must contain each corner exactly once");
+        seen_corners[cube.cp[i]] = true;
+        assert(cube.co[i] >= 0 && cube.co[i] < 3 && "co entries must be in 0..2");
+        corner_twists += cube.co[i];
+        for (std::size_t j = i + 1; j < cube.cp.size(); ++j) {
+            corner_parity ^= cube.cp[i] > cube.cp[j];
+        }
+    }
+    for (std::size_t i = 0; i < cube.ep.size(); ++i) {
+        assert(cube.ep[i] >= 0 && cube.ep[i] < 12 && "ep entries must be in 0..11");
+        assert(!seen_edges[cube.ep[i]] && "ep must contain each edge exactly once");
+        seen_edges[cube.ep[i]] = true;
+        assert(cube.eo[i] >= 0 && cube.eo[i] < 2 && "eo entries must be in 0..1");
+        edge_flips += cube.eo[i];
+        for (std::size_t j = i + 1; j < cube.ep.size(); ++j) {
+            edge_parity ^= cube.ep[i] > cube.ep[j];
+        }
+    }
+    assert(corner_twists % 3 == 0 && "corner twists must sum to 0 modulo 3");
+    assert(edge_flips % 2 == 0 && "edge flips must sum to 0 modulo 2");
+    assert(corner_parity == edge_parity && "corner and edge permutation parity must match");
+#endif
+}
+
 inline CubeState apply_move(const CubeState &cube, Move mv) {
+    assert_valid_cube(cube);
+    assert(static_cast<int>(mv) >= 0 && static_cast<int>(mv) < 18 && "invalid Move value");
     std::array<int, 8> cp{};
     std::array<int, 8> co{};
     std::array<int, 12> ep{};
@@ -168,6 +207,7 @@ inline CubeState apply_move(const CubeState &cube, Move mv) {
  * Edges 4, 5, 6, 7 are in middle (E-slice edges stay in E-slice)
  */
 inline bool phase1_complete(const CubeState &cube) {
+    assert_valid_cube(cube);
     bool ans = true;
     ans &= cube.co == oriented_corners;
     ans &= cube.eo == oriented_edges;
@@ -182,6 +222,7 @@ inline bool phase1_complete(const CubeState &cube) {
  * Corners and edges are solved
  */
 inline bool phase2_complete(const CubeState &cube) {
+    assert_valid_cube(cube);
     bool ans = true;
     ans &= phase1_complete(cube);
     ans &= cube.cp == solved_corners;
@@ -193,6 +234,7 @@ inline bool phase2_complete(const CubeState &cube) {
  * Cube is solved?
  */
 inline bool solved(const CubeState &cube) {
+    assert_valid_cube(cube);
     return phase2_complete(cube);
 }
 }

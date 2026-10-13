@@ -1,5 +1,9 @@
 # for stickers
+from pathlib import Path
+
 from PIL import Image
+
+TEXTURE_DIR = Path(__file__).resolve().parents[1] / "assets/textures"
 
 def add_black_outline(path, output_path, border_size=10):
     img = Image.open(path)
@@ -17,7 +21,11 @@ def add_black_outline(path, output_path, border_size=10):
     outlined_img.close()
     img.close()
 
-for p in ['green.png', 'red.png', 'blue.png', 'white.png', 'yellow.png', 'orange.png']:
-    out_path='textures/'+p[0].upper()+'.png'
-    p='textures/'+p
-    add_black_outline(p, out_path, border_size=80)
+def main():
+    for name in ['green.png', 'red.png', 'blue.png', 'white.png', 'yellow.png', 'orange.png']:
+        output_path = TEXTURE_DIR / (name[0].upper() + '.png')
+        add_black_outline(TEXTURE_DIR / name, output_path, border_size=80)
+
+
+if __name__ == '__main__':
+    main()

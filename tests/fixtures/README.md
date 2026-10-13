@@ -1,7 +1,8 @@
 # PLL movement fixtures
 
 Source: [CubeSkills PLL sheet](https://www.cubeskills.com/uploads/pdf/tutorials/pll-algorithms.pdf),
-by Feliks Zemdegs and Andy Klise. The local reference is `pll-algorithms.pdf`.
+by Feliks Zemdegs and Andy Klise. Regeneration expects the optional reference at
+`docs/references/pll-algorithms.pdf`; the PDF is currently absent.
 All 21 cases use the bold, suggested algorithm, including the final adjustments
 printed in square brackets. Parentheses only group moves.
 
@@ -30,5 +31,5 @@ PyMuPDF and Pillow; running the tests only needs the project's normal packages.
 
 ```sh
 python tools/generate_pll_fixtures.py
-python -m unittest test_pll -v
+python -m unittest tests.test_pll -v
 ```

@@ -171,7 +171,14 @@ def verify_printed_algorithm(initial, algorithm):
 
 
 def main():
-    pdf = pymupdf.open(ROOT / 'pll-algorithms.pdf')
+    reference_path = ROOT / 'docs/references/pll-algorithms.pdf'
+    if not reference_path.is_file():
+        raise SystemExit(
+            f'Missing reference sheet: {reference_path}\n'
+            'Save https://www.cubeskills.com/uploads/pdf/tutorials/pll-algorithms.pdf '
+            'at that path to regenerate fixtures. Existing tests do not need the PDF.'
+        )
+    pdf = pymupdf.open(reference_path)
     cases = []
     for name,algorithm in ALGORITHMS.items():
         outer = outer_turns(algorithm)

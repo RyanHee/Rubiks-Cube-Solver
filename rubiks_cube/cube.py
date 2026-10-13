@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 import numpy as np
 from panda3d.core import loadPrcFileData, TransparencyAttrib
@@ -11,6 +12,9 @@ from ursina import *
 from ursina.shaders import unlit_shader
 from ursina.shaders.unlit_with_fog_shader import unlit_with_fog_shader
 from ursina.shaders.text_shader import text_shader
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+application.asset_folder = PROJECT_ROOT / 'assets'
 
 if sys.platform == 'darwin':
     # These shaders also serve Ursina's UI and sky. Their syntax is compatible

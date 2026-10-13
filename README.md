@@ -1,62 +1,94 @@
 # Rubiks-Cube-Solver
-_solver is not implemented yet_
 
-## Requirements
-pip install ursina  
-pip install numpy
+A Python/Ursina cube visualizer with a C++ cubie-state implementation for a
+planned two-phase solver. Search and pattern databases are not implemented yet.
 
-# Run
-run main.py
+## Project layout
 
-On macOS, the visualizer requests an OpenGL core context and uses GLSL 150
-for the cube, sky, and UI shaders. Restart the app after updating the code.
+```text
+main.py                       # Python app launcher
+rubiks_cube/                  # Python model and visualizer application
+cpp/include/rubiks/           # C++ solver headers
+assets/textures/              # Sticker textures and original color images
+data/                         # Corner/edge mappings and initial cube state
+docs/mapping_rules.txt        # Custom sticker-lettering conventions
+docs/references/              # Reference download instructions and optional PDFs
+tests/                        # Active movement and PLL regression tests
+  fixtures/                   # Explicit PLL starting states
+  reference/                  # Inactive tests for the removed Python state class
+tools/                        # Mapping inspection and asset/fixture generators
+.vscode/settings.json         # VS Code unittest discovery configuration
+```
 
-# Controls
-r and t for right moves  
-l and ; for left moves  
-u and i for top layer moves  
-s and d for bottom layer moves  
-f and g for front layer moves  
-b and n for back layer moves
+## Setup and run
 
-## Movement tests
-
-Run the 21 PLL cases from the [CubeSkills algorithm sheet](https://www.cubeskills.com/uploads/pdf/tutorials/pll-algorithms.pdf):
+From the project root:
 
 ```sh
-python -m unittest test_pll -v
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install ursina numpy
+python main.py
 ```
 
-Each test starts from explicit diagram facelets and checks that the solving
-algorithm produces a fully solved cube. Fixture provenance and notation details
-are in [tests/fixtures/README.md](tests/fixtures/README.md).
+Alternatively, run `python -m rubiks_cube`. Initial facelets are loaded from
+`data/cube_init.txt` in U, L, F, R, B, D order. The application resolves data and
+texture paths relative to the project, independent of the working directory.
 
-## Solver graph representation
+On macOS, the visualizer uses an OpenGL core context, GLSL 150 shaders, and
+standard alpha blending for the UI.
 
-`CubeState` in `cube_state.py` represents a graph node using eight corners and
-twelve edges, each with a position and orientation. It is immutable and
-hashable. The solved node has every piece in its home position with orientation
-zero. Each of the 18 outer-face moves is a unit-cost edge; `R2` counts as one.
-The graph is generated on demand rather than stored in memory.
+## Controls
 
-```python
-from Rubiks_Cube import Cube
-from cube_state import CubeState
+| Turn | Clockwise | Prime |
+|---|---|---|
+| R | r | t |
+| L | l | ; |
+| U | u | i |
+| D | d | s |
+| F | f | g |
+| B | b | n |
 
-cube = Cube()
-cube.move('R')
-state = CubeState.from_cube(cube)
+Hold the right mouse button and drag to orbit; scroll to zoom; middle-drag to
+pan. Perspective zoom is limited to 6–40 units.
 
-next_state = state.moved("R'")  # state itself stays unchanged
-assert next_state.is_solved()
+## Tests
 
-for move, neighbor in state.neighbors():
-    visited_key = neighbor.key()
-
-facelets = state.to_facelets()  # shape (6, 3, 3), ordered U L F R B D
+```sh
+python -m unittest discover -s tests -t . -v
+python -m unittest tests.test_pll -v
 ```
 
-`CubeState.from_facelets()` validates color counts, cubie identities, orientation
-constraints, and permutation parity before accepting user input. The graph
-state module can run without loading Ursina. This is the representation layer;
-two-phase search and pattern databases are still to be implemented.
+VS Code's Testing sidebar is configured to discover the active tests in
+`tests/`. Refresh the sidebar after changing the layout.
+
+The 21 PLL cases come from the [CubeSkills sheet](https://www.cubeskills.com/uploads/pdf/tutorials/pll-algorithms.pdf).
+Each test starts from explicit diagram facelets and applies the solving
+algorithm. See [fixture documentation](tests/fixtures/README.md) for provenance
+and notation details. The previous Python cubie-state tests are preserved in
+`tests/reference/` and are not discovered because their implementation was removed.
+
+## C++ state
+
+Include `rubiks/cube_state.hpp`, using `cpp/include` as an include directory
+and C++20 or later:
+
+```sh
+c++ -std=c++20 -I cpp/include your_program.cpp -o your_program
+```
+
+The custom piece numbering is defined in `data/corner_mapping.json` and
+`data/edge_mapping.json`; its conventions are in [mapping rules](docs/mapping_rules.txt).
+
+## Development tools
+
+```sh
+python tools/inspect_mappings.py
+python tools/create_stickers.py
+python tools/generate_pll_fixtures.py
+```
+
+The sticker tool rewrites the letter-named sticker textures. The PLL fixture
+generator requires the optional `docs/references/pll-algorithms.pdf`, which is
+currently absent. See [reference instructions](docs/references/README.md).
+It also requires PyMuPDF and Pillow (`python -m pip install pymupdf pillow`).

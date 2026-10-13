@@ -11,10 +11,10 @@ import unittest
 
 import numpy as np
 
-from Rubiks_Cube import Cube
+from rubiks_cube.cube import Cube
 
 
-FIXTURE_PATH = Path(__file__).resolve().parent / 'tests/fixtures/pll_cases.json'
+FIXTURE_PATH = Path(__file__).resolve().parent / 'fixtures/pll_cases.json'
 FIXTURES = json.loads(FIXTURE_PATH.read_text())
 FACE_ORDER = FIXTURES['face_order']
 SOLVED = np.array([
