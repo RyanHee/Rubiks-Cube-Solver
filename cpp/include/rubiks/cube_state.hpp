@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rubiks/slice_mapping.hpp"
 #include <array>
 #include <cassert>
 #include <cstddef>
@@ -13,6 +14,22 @@ enum class Move : int {
     D, D2, DPrime,
     L, L2, LPrime,
     B, B2, BPrime
+};
+
+inline constexpr std::array<Move, 18> phase1_moves{
+    Move::U, Move::U2, Move::UPrime,
+    Move::R, Move::R2, Move::RPrime,
+    Move::F, Move::F2, Move::FPrime,
+    Move::D, Move::D2, Move::DPrime,
+    Move::L, Move::L2, Move::LPrime,
+    Move::B, Move::B2, Move::BPrime
+};
+
+inline constexpr std::array<Move, 10> phase2_moves{
+    Move::U, Move::U2, Move::UPrime,
+    Move::R2, Move::F2,
+    Move::D, Move::D2, Move::DPrime,
+    Move::L2, Move::B2
 };
 
 constexpr std::array<int, 8> oriented_corners{0, 0, 0, 0, 0, 0, 0, 0};
@@ -106,6 +123,9 @@ constexpr std::array<std::array<int, 12>, 18> twist_e{{
     {1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0}, // BPrime
 }};
 
+struct CubeState;
+inline void assert_valid_cube(const CubeState &cube);
+
 struct CubeState {
     /**
      * cp[i] = j -> the corner at i slot belongs to j
@@ -115,12 +135,12 @@ struct CubeState {
     std::array<int, 8> co{};
     std::array<int, 12> ep{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     std::array<int, 12> eo{};
+    int twist{};
+    int flip{};
+    int slice_mask{};
 
     constexpr CubeState() {
-        cp = solved_corners;
-        co = oriented_corners;
-        ep = solved_edges;
-        eo = oriented_edges;
+        init(solved_corners, oriented_corners, solved_edges, oriented_edges);
     }
     
     constexpr CubeState(std::array<int, 8> cp_, std::array<int, 8> co_, std::array<int, 12> ep_, std::array<int, 12> eo_) {
@@ -136,6 +156,20 @@ struct CubeState {
         co = co_;
         ep = ep_;
         eo = eo_;
+        twist = 0;
+        flip = 0;
+        slice_mask = 0;
+        for (int i = 0; i < 7; i++) {
+            twist = twist * 3 + co[i];
+        }
+        for (int i = 0; i < 12; i++) {
+            if (i < 11) {
+                flip = flip * 2 + eo[i];
+            }
+            if (4 <= ep[i] && ep[i] <= 7) {
+                slice_mask |= 1 << i;
+            }
+        }
     }
     
     bool operator ==(const CubeState &other) const {
@@ -143,6 +177,24 @@ struct CubeState {
             && co == other.co
             && ep == other.ep
             && eo == other.eo;
+    }
+
+    int phase1_state_corners() const {
+        assert_valid_cube(*this);
+        assert(twist >= 0 && twist < 2187 && "invalid corner orientation coordinate");
+        assert(slice_mask >= 0 && slice_mask < 4096 && "invalid slice mask");
+        const int slice = slice_mapping.coordinate[slice_mask];
+        assert(slice >= 0 && "slice mask must contain exactly four positions");
+        return twist * 495 + slice;
+    }
+
+    int phase1_state_edges() const {
+        assert_valid_cube(*this);
+        assert(flip >= 0 && flip < 2048 && "invalid edge orientation coordinate");
+        assert(slice_mask >= 0 && slice_mask < 4096 && "invalid slice mask");
+        const int slice = slice_mapping.coordinate[slice_mask];
+        assert(slice >= 0 && "slice mask must contain exactly four positions");
+        return flip * 495 + slice;
     }
 };
 
@@ -237,4 +289,6 @@ inline bool solved(const CubeState &cube) {
     assert_valid_cube(cube);
     return phase2_complete(cube);
 }
+
+constexpr CubeState solved_cube(solved_corners, oriented_corners, solved_edges, oriented_edges);
 }

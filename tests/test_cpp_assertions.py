@@ -32,6 +32,14 @@ class CppAssertionTests(unittest.TestCase):
             with self.subTest(build=executable.name):
                 subprocess.run([str(executable)], check=True, capture_output=True)
 
+    def test_phase1_coordinate_mapping_and_boundaries(self):
+        executable = Path(self.temp.name) / 'phase1_coordinates'
+        subprocess.run([
+            COMPILER, '-std=c++23', '-I', str(ROOT / 'cpp/include'),
+            str(ROOT / 'tests/cpp/phase1_coordinates.cpp'), '-o', str(executable),
+        ], check=True, capture_output=True, text=True)
+        subprocess.run([str(executable)], check=True, capture_output=True)
+
     def test_invalid_arrays_are_rejected_before_each_operation(self):
         cases = {
             'cp_low': 'cp entries', 'cp_high': 'cp entries',

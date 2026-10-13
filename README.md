@@ -73,6 +73,9 @@ and notation details. The previous Python cubie-state tests are preserved in
 Include `rubiks/cube_state.hpp`, using `cpp/include` as an include directory
 and C++20 or later:
 
+`compile_flags.txt` supplies the same language version and include path to
+clangd-based editors such as Zed. Open the project root folder in the editor.
+
 ```sh
 c++ -std=c++20 -I cpp/include your_program.cpp -o your_program
 ```
