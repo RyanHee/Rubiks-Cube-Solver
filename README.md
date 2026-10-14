@@ -97,9 +97,7 @@ bridge tests build the solver when needed.
 The 21 PLL cases come from the [CubeSkills sheet](https://www.cubeskills.com/uploads/pdf/tutorials/pll-algorithms.pdf).
 Each test starts from explicit diagram facelets and applies the solving
 algorithm. See [fixture documentation](tests/fixtures/README.md) for provenance
-and notation details. Tests for the earlier Python cubie-state representation are preserved in
-`tests/reference/`. That directory is excluded from normal unittest discovery;
-the current sticker-to-cubie bridge is tested in `tests/test_cube_state.py`.
+and notation details. The sticker-to-cubie bridge is tested in `tests/test_cube_state.py`.
 
 ## C++ state
 
@@ -114,7 +112,7 @@ c++ -std=c++23 -I cpp/include your_program.cpp -o your_program
 ```
 
 The custom piece numbering is defined in `data/corner_mapping.json` and
-`data/edge_mapping.json`; its conventions are in [mapping rules](docs/mapping_rules.txt).
+`data/edge_mapping.json`; its conventions are in [mapping rules](docs/mapping_rules.md).
 
 `rubiks::generate_tables()` in `rubiks/table.hpp` generates all four pattern
 databases in memory. The existing `corner_distance` and `edge_distance` fields
@@ -213,11 +211,10 @@ cpp/include/rubiks/           # C++ state, tables, and solver headers
 cpp/src/solver.cpp            # Two-phase search and standalone CLI
 assets/textures/              # Sticker textures and original color images
 data/                         # Corner/edge mappings and initial cube state
-docs/mapping_rules.txt        # Custom sticker-lettering conventions
+docs/mapping_rules.md        # Custom sticker-lettering conventions
 docs/references/              # Reference download instructions and optional PDFs
 tests/                        # Python, C++, PLL, and solver bridge tests
   fixtures/                   # Explicit PLL starting states
-  reference/                  # Inactive tests for the removed Python state class
 tools/                        # Mapping inspection and asset/fixture generators
 .vscode/settings.json         # VS Code unittest discovery configuration
 ```
