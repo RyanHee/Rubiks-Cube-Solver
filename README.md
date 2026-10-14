@@ -33,7 +33,8 @@ python -m pip install ursina numpy
 python main.py
 ```
 
-Alternatively, run `python -m rubiks_cube`. Initial facelets are loaded from
+Alternatively, run `python -m rubiks_cube`. The intro screen offers Simulator
+and Solver / Sticker Input modes. The simulator initially loads facelets from
 `data/cube_init.txt` in U, L, F, R, B, D order. The application resolves data and
 texture paths relative to the project, independent of the working directory.
 
@@ -128,3 +129,63 @@ The sticker tool rewrites the letter-named sticker textures. The PLL fixture
 generator requires the optional `docs/references/pll-algorithms.pdf`, which is
 currently absent. See [reference instructions](docs/references/README.md).
 It also requires PyMuPDF and Pillow (`python -m pip install pymupdf pillow`).
+
+### Python sticker validation and solver state
+
+Use `cube.to_cubestate()` (or `CubeState.from_facelets(stickers)` from
+`rubiks_cube.cube_state`) to validate sticker input and create immutable
+`cp`, `co`, `ep`, and `eo` tuples matching the C++ solver. Input has shape
+`(6, 3, 3)` in U, L, F, R, B, D order, with each face viewed from outside.
+Centers must be W, O, G, R, B, Y respectively.
+
+```python
+from rubiks_cube.cube import Cube
+
+cube = Cube()
+cube.move('R')
+try:
+    state = cube.to_cubestate()
+except ValueError as error:
+    print(error)  # Can be displayed by the future sticker-input GUI.
+else:
+    solver_input = state.to_solver_input()  # 40 integers for the C++ CLI.
+```
+
+Validation rejects incorrect colors/counts/centers, invalid or mirrored pieces,
+duplicate pieces, impossible twists/flips, and mismatched permutation parity.
+Conversion snapshots the input and does not change the simulator cube.
+
+### GUI modes and sticker entry
+
+The app opens on a mode selection screen. Choose **Simulator** for the existing
+3D controls, or **Solver / Sticker Input** to edit an unfolded cube net. Select
+one of the six paint colors and click stickers; center stickers are locked.
+Each paint button shows its current count out of nine.
+
+Use **Prev / Next** to choose from 10 palettes: Classic, Bright, Pastel, Muted,
+Ocean, Neon, Earth, Candy, Jewel, and High contrast. These change the displayed
+colors while retaining the W/O/G/R/B/Y piece identities.
+
+**Validate cube** checks physical reachability. On success, **Open in simulator**
+shows the entered cube in 3D with the chosen palette. Sticker edits persist when
+switching modes. Use **Modes** or Escape to return to the intro screen.
+Click **Solve cube** to validate the stickers and run the C++ two-phase solver.
+The app builds `build/rubiks_solver` automatically on first use or after changes
+to C++ sources/headers. A C++23 compiler is required (`clang++`, `g++`, or `c++`);
+on macOS install Xcode Command Line Tools if needed.
+
+Compiling and searching run in a separate process, keeping the GUI responsive.
+Use **Cancel solve** or switch modes to stop a search. Searches have a 120-second
+timeout; difficult cubes can exceed it with the current search implementation.
+Pattern databases are still generated each time the solver process starts.
+
+The returned moves are verified against the Python sticker model. The solution
+screen supports **Play/Pause**, **Next move**, **Restart**, and **Edit stickers**.
+Orbit and zoom remain available; manual face turns are disabled during solution
+playback to keep the displayed cube aligned with the solution. Restart restores
+the original entered cube.
+
+During solution playback, use the **− / +** speed controls to choose **0.25× to
+4×** speed. Changes take effect on the next move. A curved gold arrow marks the
+turning face and its direction, viewed from outside that face; half turns show
+an extended 180-degree arc. Orbit the cube to see arrows on rear-facing faces.

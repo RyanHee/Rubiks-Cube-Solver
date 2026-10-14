@@ -24,6 +24,9 @@ if sys.platform == 'darwin':
         previous_shader = getattr(shader, '_shader', None)
         shader.vertex = shader.vertex.replace('#version 130', '#version 150')
         shader.fragment = shader.fragment.replace('#version 140', '#version 150')
+        if shader is text_shader:
+            # The default opaque outline fills the glyph quads on macOS.
+            shader.default_input['outline_color'] = color.clear
         shader.compile()
         if previous_shader is not None:
             _mac_shader_replacements[previous_shader] = shader._shader
@@ -34,12 +37,18 @@ if sys.platform == 'darwin':
 
 
 class Cube:
+    def to_cubestate(self):
+        """Validate the stickers and return the solver's Python cubie state."""
+        from .cube_state import CubeState
+        return CubeState.from_cube(self)
+
     def __init__(self, cube_list=None):
         if cube_list is not None:
             temp_cube = np.array(cube_list)
             if isinstance(temp_cube, np.ndarray) and temp_cube.shape == (6, 3, 3):
                 self.cube = temp_cube
                 return
+            raise ValueError('Stickers must have shape (6, 3, 3)')
         lst = ['W', 'O', 'G', 'R', 'B', 'Y']
         temp = list()
         for it in lst:
@@ -578,13 +587,15 @@ class CubeVisualizer:
                        scale=0.9,
                        position=local_pos,
                        rotation=local_rot,
-                       texture=self.color_map[face_color_char],
+                       texture=None if getattr(self, 'palette', None) else self.color_map[face_color_char],
+                       color=self.palette[face_color_char] if getattr(self, 'palette', None) else color.white,
+                       sticker_color=face_color_char,
                        shader=unlit_shader)
 
     def input(self, key):
         if not self.can_action:
             return
-        if key in 'ruldfb':
+        if key in ('r', 'u', 'l', 'd', 'f', 'b'):
             self.rotate(key.upper())
         elif key in self.prime_moves:
             self.rotate(self.prime_moves[key])
@@ -603,22 +614,39 @@ class CubeVisualizer:
         self.cubelet_entities = temp
         self.core.rotation = 0
 
-    def rotate(self, move):
+    def rotate(self, move, duration=None):
+        duration = self.turn_duration if duration is None else duration
         self.can_action = False
         self.reparent()
+        self.cube.move(move)
         rotate_axis = self.rot_axis[move[0]]
         temp_s = ''
         if len(move) != 1:
             temp_s = move[1]
-        rotate_angle = self.rot_angle[temp_s]
+        rotate_angle = int(self.rot_angle[temp_s])
+        if move[0] in ('L', 'D', 'B'):
+            rotate_angle = -rotate_angle
         for xi, yi, zi in self.cube_to_rot[move[0]]:
             cubelet_entity = self.cubelet_entities[(xi, yi, zi)]
             cubelet_entity.parent = self.core
-            eval(f'self.core.animate_rotation_{rotate_axis}({rotate_angle}, duration = self.turn_duration)')
-        invoke(self.trigger_action, delay=self.turn_duration + 0.1)
+        getattr(self.core, f'animate_rotation_{rotate_axis}')(rotate_angle, duration=duration)
+        invoke(self.trigger_action, delay=duration * 1.2)
 
     def trigger_action(self):
         self.can_action = True
+
+    def set_cube(self, cube, palette=None):
+        """Rebuild the preview after editing stickers or changing its palette."""
+        self.reparent()
+        destroy(self.cube_entity)
+        self.cube = cube
+        self.cube_array = cube.cube.copy()
+        self.cube_entity = Entity(shader=unlit_shader)
+        self.cubelets = [[[Cubelet() for _ in range(3)] for _ in range(3)] for _ in range(3)]
+        self.cubelet_entities = {}
+        self.palette = palette
+        self.assign_colors()
+        self.build_cube()
 
     def run(self):
         self.app.run()
