@@ -5,6 +5,8 @@ Studio**. The Python/Ursina app provides a 3D simulator, a sticker editor with
 physical-state validation, and animated solution playback. A C++ two-phase
 solver uses pattern databases and IDA* search to find the moves.
 
+[Watch the demo on YouTube](https://www.youtube.com/shorts/1tL16x8NM6M).
+
 ## Setup and run
 
 Run these commands from the project root:
