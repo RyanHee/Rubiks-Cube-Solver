@@ -400,6 +400,10 @@ class CubeVisualizer:
         self.turn_duration = 0.5
         self.can_action = True
         self.app = Ursina()
+        # Cocoa may defer its first resize event until focus changes. Set the
+        # UI lens now instead of waiting for Ursina's aspectRatioChanged event.
+        self.initialize_viewport()
+        self.app.taskMgr.add(self._initialize_ready_viewport, 'initialize-cube-viewport')
         if sys.platform == 'darwin':
             # Refresh shader references on nodes created during Ursina import.
             for root in (self.app.render, self.app.render2d, camera.ui_render):
@@ -428,6 +432,18 @@ class CubeVisualizer:
             self.input(key)
 
         window.input = global_input
+
+    def initialize_viewport(self):
+        width, height = self.app.win.getXSize(), self.app.win.getYSize()
+        aspect = width / height if width > 0 and height > 0 else window.aspect_ratio
+        ui_height = camera._ui_size * .5
+        camera.ui_lens.set_film_size(ui_height * aspect, ui_height)
+
+    def _initialize_ready_viewport(self, task):
+        if not self.app.win.isValid():
+            return task.cont
+        self.initialize_viewport()
+        return task.done
 
     def init_maps(self):
         self.cubelet_entities = {}
