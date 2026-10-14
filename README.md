@@ -2,7 +2,8 @@
 
 A Python/Ursina cube visualizer with a C++ cubie-state implementation for a
 planned two-phase solver. Pattern-database generation is implemented for both
-phases; search and database persistence are not implemented yet.
+phases, along with phase-1 and phase-2 IDA* search. Database persistence is not
+implemented yet.
 
 ## Project layout
 
@@ -100,6 +101,20 @@ The phase-2 indices combine a lexicographic 8-piece permutation rank with the
 4-piece slice permutation rank: `permutation * 24 + slice`. Slice pieces are
 IDs 4–7; U/D edges are IDs 0–3 and 8–11. The solved indices are zero. Table
 generation is runtime work; saving/loading the databases is not implemented yet.
+
+Phase-1 search is declared in `rubiks/solver.hpp` and implemented in
+`cpp/src/solver.cpp`. `phase1(root)` returns moves reaching the phase-2 subgroup,
+leaves `root` unchanged, and returns an empty path if phase 1 is already complete.
+The search starts at the pattern-database lower bound and searches up to 12 moves.
+`phase2(endpoint)` uses the same search structure with phase-2 heuristics, the
+10 restricted moves, a fully solved goal, and an 18-move cap. It rejects inputs
+outside the subgroup with `std::invalid_argument`. Both phases leave input
+states unchanged and throw `std::runtime_error` if their move limit is exhausted.
+
+The standalone executable reads 40 cubie integers (8 cp, 8 co, 12 ep, 12 eo),
+runs phase 1 followed by phase 2, and prints space-separated solution moves.
+This initial approach uses the first phase-1 solution; it does not optimize
+the combined solution length or implement a search timeout.
 
 ## Development tools
 

@@ -1,9 +1,11 @@
 #pragma once
 
 #include "rubiks/slice_mapping.hpp"
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 
 namespace rubiks {
 
@@ -331,4 +333,29 @@ inline bool solved(const CubeState &cube) {
 }
 
 constexpr CubeState solved_cube(solved_corners, oriented_corners, solved_edges, oriented_edges);
+
+// Exact position identity for visited-state sets: cp, co, ep, then eo.
+// Cached coordinates are derived from these arrays and are not part of the key.
+using CubeKey = std::array<std::uint8_t, 40>;
+
+inline CubeKey make_key(const CubeState &cube) {
+    assert_valid_cube(cube);
+    CubeKey key{};
+    auto output = key.begin();
+    output = std::copy(cube.cp.begin(), cube.cp.end(), output);
+    output = std::copy(cube.co.begin(), cube.co.end(), output);
+    output = std::copy(cube.ep.begin(), cube.ep.end(), output);
+    std::copy(cube.eo.begin(), cube.eo.end(), output);
+    return key;
+}
+
+struct CubeKeyHash {
+    std::size_t operator()(const CubeKey &key) const noexcept {
+        std::size_t hash = 0;
+        for (auto value : key) {
+            hash = hash * 31 + value;
+        }
+        return hash;
+    }
+};
 }

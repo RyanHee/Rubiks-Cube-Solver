@@ -32,6 +32,14 @@ class CppAssertionTests(unittest.TestCase):
             with self.subTest(build=executable.name):
                 subprocess.run([str(executable)], check=True, capture_output=True)
 
+    def test_cube_keys_and_visited_state_sets(self):
+        executable = Path(self.temp.name) / 'cube_keys'
+        subprocess.run([
+            COMPILER, '-std=c++23', '-I', str(ROOT / 'cpp/include'),
+            str(ROOT / 'tests/cpp/cube_keys.cpp'), '-o', str(executable),
+        ], check=True, capture_output=True, text=True)
+        subprocess.run([str(executable)], check=True, capture_output=True)
+
     def test_phase1_coordinate_mapping_and_boundaries(self):
         executable = Path(self.temp.name) / 'phase1_coordinates'
         subprocess.run([
@@ -46,6 +54,26 @@ class CppAssertionTests(unittest.TestCase):
             COMPILER, '-std=c++23', '-O2', '-DNDEBUG',
             '-I', str(ROOT / 'cpp/include'),
             str(ROOT / 'tests/cpp/phase2_tables.cpp'), '-o', str(executable),
+        ], check=True, capture_output=True, text=True)
+        subprocess.run([str(executable)], check=True, capture_output=True, timeout=60)
+
+    def test_phase1_search(self):
+        executable = Path(self.temp.name) / 'phase1_search'
+        subprocess.run([
+            COMPILER, '-std=c++23', '-O2', '-DNDEBUG', '-DRUBIKS_SOLVER_NO_MAIN',
+            '-I', str(ROOT / 'cpp/include'),
+            str(ROOT / 'cpp/src/solver.cpp'), str(ROOT / 'tests/cpp/phase1_search.cpp'),
+            '-o', str(executable),
+        ], check=True, capture_output=True, text=True)
+        subprocess.run([str(executable)], check=True, capture_output=True, timeout=60)
+
+    def test_phase2_search_and_two_phase_integration(self):
+        executable = Path(self.temp.name) / 'phase2_search'
+        subprocess.run([
+            COMPILER, '-std=c++23', '-O2', '-DNDEBUG', '-DRUBIKS_SOLVER_NO_MAIN',
+            '-I', str(ROOT / 'cpp/include'),
+            str(ROOT / 'cpp/src/solver.cpp'), str(ROOT / 'tests/cpp/phase2_search.cpp'),
+            '-o', str(executable),
         ], check=True, capture_output=True, text=True)
         subprocess.run([str(executable)], check=True, capture_output=True, timeout=60)
 
